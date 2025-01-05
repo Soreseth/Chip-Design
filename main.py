@@ -28,8 +28,8 @@ class ChipDesign:
 
     def generateMatrix(self):
         self.matrix = [
-            [z3.Int("x_%s_%s" % (i + 1, j + 1)) for i in range(self.width)]
-            for j in range(self.height)
+            [z3.Int(f"x_{i}_{j}") for j in range(self.width)]
+            for i in range(self.height)
         ]
 
         # 0 = empty cell
@@ -39,8 +39,8 @@ class ChipDesign:
 
     def placeComponents(self):
         # Place regular components in the matrix (chip platine)
-        placements = []
         for id, (reg_width, reg_height) in enumerate(self.regularComponents):
+            placements = []
             for i in range(self.height - reg_height + 1):
                 for j in range(self.width - reg_width + 1):
                     components_cells = [
@@ -57,8 +57,8 @@ class ChipDesign:
                     ]
                     placements.append(Or(And(components_cells), And(turned_components_cells)))
 
-        # Only one of these possible placements must be fulfilled 
-        self.solver.add(Or(placements))
+            # Only one of these possible placements must be fulfilled 
+            self.solver.add(Or(placements))
 
         # Ensure that the regular components are not placed on top of each other
         unique_placement = [
